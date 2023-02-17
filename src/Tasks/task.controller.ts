@@ -1,6 +1,7 @@
-import { Controller, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { Response } from '@nestjs/common';
 import { taskService } from './task.service';
+import { CreateTaskDTO } from './dto/task.dto';
 
 @Controller('task')
 export class TaskController {
@@ -10,9 +11,16 @@ export class TaskController {
     return this.taskService.getList();
   }
   @Post(':id')
-  createTask(@Param('id') id: string, @Res() res: Response): any {
+  async createTask(
+    @Res() res,
+    @Body() createTaskDto: CreateTaskDTO,
+  ): Promise<any> {
     try {
-      const result = this.taskService.create({ name: id });
+      const result = await this.taskService.addTask(createTaskDto);
+      return res.status(HttpStatus.OK).json({
+        mesage: 'Task created Successfully.',
+        task: result,
+      });
       // res.status('200').json(result);
     } catch (error) {
       console.log('error: ', error);
