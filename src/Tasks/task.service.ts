@@ -13,4 +13,18 @@ export class taskService {
     await result.save();
     return result;
   }
+
+  async list(page: number, limit: number, filter: object): Promise<any[]> {
+    const total = await this.taskModel.countDocuments(filter);
+
+    if (page > Math.ceil(total / limit) && total > 0)
+      page = Math.ceil(total / limit);
+
+    const tasks = await this.taskModel.aggregate([
+      { $match: filter },
+      { $skip: limit * (page - 1) },
+      { $limit: limit },
+    ]);
+    return tasks;
+  }
 }
