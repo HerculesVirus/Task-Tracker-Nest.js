@@ -53,7 +53,11 @@ export class TaskController {
         task: result,
       });
     } catch (error) {
-      console.log('error: ', error);
+      if (error.code === 11000) {
+        res.status(HttpStatus.FORBIDDEN).json({
+          message: 'Title Should be Unique',
+        });
+      }
     }
   }
 }
