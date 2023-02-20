@@ -8,8 +8,9 @@ import { CreateTaskDTO } from './dto/task.dto';
 export class taskService {
   constructor(@InjectModel('Task') private readonly taskModel: Model<Task>) {}
 
-  create(task?: CreateTaskDTO) {
+  async create(task?: CreateTaskDTO): Promise<Task> {
     const result = new this.taskModel(task);
+    await result.save();
     return result;
   }
 }

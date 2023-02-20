@@ -6,18 +6,17 @@ import { CreateTaskDTO } from './dto/task.dto';
 export class TaskController {
   constructor(private readonly taskService: taskService) {}
 
-  @Post('')
+  @Post('/')
   async createTask(
     @Res() res,
     @Body() createTaskDto: CreateTaskDTO,
   ): Promise<any> {
     try {
-      const result = this.taskService.create(createTaskDto);
+      const result = await this.taskService.create(createTaskDto);
       return res.status(HttpStatus.OK).json({
         mesage: 'Task created Successfully.',
         task: result,
       });
-      // res.status('200').json(result);
     } catch (error) {
       console.log('error: ', error);
     }
