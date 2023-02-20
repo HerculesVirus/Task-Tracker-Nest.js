@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Date } from 'mongoose';
 
+import { HydratedDocument } from 'mongoose';
+
+export type TaskDocument = HydratedDocument<Task>;
 @Schema()
 export class Task {
   @Prop()
@@ -10,7 +12,7 @@ export class Task {
   description: string;
 
   @Prop()
-  date: Date;
+  date: string;
 
   @Prop()
   reminder: boolean;
