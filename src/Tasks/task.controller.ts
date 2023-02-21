@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common';
 import { taskService } from './task.service';
 import { CreateTaskDTO } from './dto/task.dto';
+import { Task } from './interfaces/Task.interface';
 
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: taskService) {}
 
   @Get('/')
-  async listOfTasks(@Query() query, @Res() res): Promise<any> {
+  async listOfTasks(@Query() query, @Res() res): Promise<Task> {
     console.log('params: ', query?.page);
 
     const page = query?.page !== undefined ? query?.page : 1;
@@ -24,7 +25,7 @@ export class TaskController {
 
     const TaskList = await this.taskService.list(page, limit, filter);
 
-    res.status(HttpStatus.OK).json({
+    return res.status(HttpStatus.OK).json({
       success: true,
       message: 'reward fetched successfully',
       data: {
@@ -37,15 +38,13 @@ export class TaskController {
         },
       },
     });
-
-    return {};
   }
 
   @Post('/create')
   async createTask(
     @Res() res,
     @Body() createTaskDto: CreateTaskDTO,
-  ): Promise<any> {
+  ): Promise<Task> {
     try {
       const result = await this.taskService.create(createTaskDto);
       return res.status(HttpStatus.OK).json({
