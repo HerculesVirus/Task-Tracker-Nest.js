@@ -3,7 +3,9 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
+  Put,
   Query,
   Res,
 } from '@nestjs/common';
@@ -17,24 +19,25 @@ export class TaskController {
 
   @Get('/')
   async listOfTasks(@Query() query, @Res() res): Promise<Task> {
-    console.log('params: ', query?.page);
-
-    const page = query?.page !== undefined ? query?.page : 1;
-    const limit = query.limit !== undefined ? query.limit : 10;
+    const page = query?.page !== undefined ? parseInt(query?.page) : 1;
+    const limit = query.limit !== undefined ? parseInt(query.limit) : 10;
     const filter = {};
 
-    const TaskList = await this.taskService.list(page, limit, filter);
+    const result = await this.taskService.list(page, limit, filter);
 
     return res.status(HttpStatus.OK).json({
       success: true,
       message: 'reward fetched successfully',
       data: {
-        tasks: TaskList,
+        tasks: result.items,
         pagination: {
-          page,
-          limit,
-          total: (await TaskList).length,
-          pages: 15,
+          page: result.page,
+          limit: result.limit,
+          total: (await result.items).length,
+          pages:
+            Math.ceil(result.total / result.limit) <= 0
+              ? 1
+              : Math.ceil(result.total / limit),
         },
       },
     });
@@ -57,6 +60,19 @@ export class TaskController {
           message: 'Title Should be Unique',
         });
       }
+    }
+  }
+
+  @Put('/:id')
+  async UpdateTask(@Body() Body, @Param() param, @Res() res): Promise<any> {
+    try {
+      const result = await this.taskService.updateTask(Body, param);
+      res.status(HttpStatus.OK).json({
+        message: 'Task Update Sucessfully',
+        task: result,
+      });
+    } catch (err) {
+      console.log('error: ', err);
     }
   }
 }

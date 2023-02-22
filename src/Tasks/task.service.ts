@@ -14,17 +14,29 @@ export class taskService {
     return result;
   }
 
-  async list(page: number, limit: number, filter: object): Promise<any[]> {
+  async list(page: number, limit: number, filter: object): Promise<any> {
     const total = await this.taskModel.countDocuments(filter);
 
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
-    console.log('limit: ', limit);
+    console.log('page: ', page);
+    console.log('limit: ', typeof limit);
     const tasks = await this.taskModel.aggregate([
       { $match: filter },
       { $skip: limit * (page - 1) },
       { $limit: limit },
     ]);
-    return tasks;
+    console.log('empty: ', tasks);
+    return { items: tasks, page, limit, total };
+  }
+
+  async updateTask(..._arg: any) {
+    const { Body, param } = _arg;
+    const result = await this.taskModel.findOneAndUpdate(
+      { _id: param.id },
+      { $set: Body },
+      { $new: true },
+    );
+    return result;
   }
 }
