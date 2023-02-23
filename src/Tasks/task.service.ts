@@ -30,13 +30,23 @@ export class taskService {
     return { items: tasks, page, limit, total };
   }
 
-  async updateTask(..._arg: any) {
-    const { Body, param } = _arg;
-    const result = await this.taskModel.findOneAndUpdate(
-      { _id: param.id },
-      { $set: Body },
-      { $new: true },
-    );
-    return result;
+  async updateTask(..._arg: any): Promise<Task> {
+    try {
+      const [payload, id] = _arg;
+
+      const result = await this.taskModel.findOneAndUpdate(
+        { _id: id },
+        { $set: payload },
+        { $new: true },
+      );
+      return result;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async deleteTask(id: string): Promise<any> {
+    const delItem = await this.taskModel.deleteOne({ _id: id });
+    return delItem;
   }
 }

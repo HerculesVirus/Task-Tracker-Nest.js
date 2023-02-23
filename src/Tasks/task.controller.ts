@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -64,15 +65,32 @@ export class TaskController {
   }
 
   @Put('/:id')
-  async UpdateTask(@Body() Body, @Param() param, @Res() res): Promise<any> {
+  async UpdateTask(
+    @Body() Body: Task,
+    @Param() param,
+    @Res() res,
+  ): Promise<Task> {
     try {
-      const result = await this.taskService.updateTask(Body, param);
-      res.status(HttpStatus.OK).json({
+      console.log('param: ', param.id);
+      console.log('Body: ', Body);
+      const payload = Body;
+      const result = await this.taskService.updateTask(payload, param.id);
+      return res.status(HttpStatus.OK).json({
         message: 'Task Update Sucessfully',
         task: result,
       });
     } catch (err) {
       console.log('error: ', err);
     }
+  }
+
+  @Delete('/:id')
+  async DeleteTask(@Param() param, @Res() res) {
+    const { id } = param;
+    const result = await this.taskService.deleteTask(id);
+    return res.status(HttpStatus.OK).json({
+      message: 'Task deleted sucessfully',
+      task: result,
+    });
   }
 }
