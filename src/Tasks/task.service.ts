@@ -19,14 +19,12 @@ export class taskService {
 
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
-    console.log('page: ', page);
-    console.log('limit: ', typeof limit);
+
     const tasks = await this.taskModel.aggregate([
       { $match: filter },
       { $skip: limit * (page - 1) },
       { $limit: limit },
     ]);
-    console.log('empty: ', tasks);
     return { items: tasks, page, limit, total };
   }
 

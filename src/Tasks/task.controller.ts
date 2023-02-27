@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
 import { taskService } from './task.service';
@@ -45,12 +46,9 @@ export class TaskController {
   }
 
   @Post('/create')
-  async createTask(
-    @Res() res,
-    @Body() createTaskDto: CreateTaskDTO,
-  ): Promise<Task> {
+  async createTask(@Req() req, @Res() res): Promise<Task> {
     try {
-      const result = await this.taskService.create(createTaskDto);
+      const result = await this.taskService.create(req.body);
       return res.status(HttpStatus.OK).json({
         mesage: 'Task created Successfully.',
         task: result,
@@ -71,8 +69,6 @@ export class TaskController {
     @Res() res,
   ): Promise<Task> {
     try {
-      console.log('param: ', param.id);
-      console.log('Body: ', Body);
       const payload = Body;
       const result = await this.taskService.updateTask(payload, param.id);
       return res.status(HttpStatus.OK).json({
